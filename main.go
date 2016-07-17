@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,11 +11,19 @@ import (
 
 	"gopkg.in/mcuadros/go-syslog.v2"
 )
+type logWriter struct {
+}
+
+func (writer logWriter) Write(bytes []byte) (int, error) {
+	return fmt.Println(string(bytes))
+}
 
 var wrapCommand string
 var syslogBind string
 
 func init() {
+	log.SetFlags(0)
+	log.SetOutput(new(logWriter))
 	flag.StringVar(&wrapCommand, "cmd", "", "Command to wrap")
 	flag.StringVar(&syslogBind, "syslog", "127.0.0.1:514", "Address of internal syslog UDP server")
 }
